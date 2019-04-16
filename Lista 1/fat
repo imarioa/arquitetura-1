@@ -1,0 +1,23 @@
+%include "io.inc"
+section .bss
+n resd 1
+section .text
+global CMAIN
+CMAIN:
+    
+    GET_DEC 4, n
+    mov ecx, [n]
+    call fatorial   
+    mov [n], eax
+    PRINT_DEC 4, [n]
+    
+    xor eax, eax
+    ret
+    
+fatorial:
+    mov eax, 1
+       .L1:
+        mul ecx
+        dec ecx
+       jnz .L1   
+ret    

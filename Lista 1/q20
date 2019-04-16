@@ -1,0 +1,28 @@
+%include "io.inc"
+section .data
+
+arrayB DB 0,1,2,3,4,5,6,7,8,9
+
+section .text
+global CMAIN
+CMAIN:
+    mov ebp, esp; for correct debugging
+    mov ecx, 5
+    mov esi, arrayB + 9
+    mov edx, arrayB
+    
+    ;PRINT_DEC 1, [arrayB + 9]
+    
+    .L1:
+    mov al, [edx] ; aux1 = v[0]
+    mov bl, [esi] ; aux2 = v[9]
+    mov [esi], al ; v[9] = aux1
+    mov [edx], bl ; v[0] = aux2
+    inc edx
+    dec esi
+    loop .L1
+    
+    PRINT_DEC 1, [arrayB + 9]
+    
+    xor eax, eax
+    ret

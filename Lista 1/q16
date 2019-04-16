@@ -1,0 +1,26 @@
+%include "io.inc"
+
+section .data
+arrayDD DD 10,20,30,40
+
+section .text
+global CMAIN
+CMAIN:
+    
+    mov esi, 4 
+    mov edx, 0 ; aux
+    mov eax, [arrayDD]; aux2
+    mov ebx, 0
+    mov ecx, 4
+    
+    .L1:
+    mov edx, eax
+    mov eax, [arrayDD + esi]
+    mov [arrayDD + esi], edx
+    add esi, 4
+    loop .L1
+    mov [arrayDD], edx
+    PRINT_DEC 4,[arrayDD + 12]
+    
+    xor eax, eax
+    ret

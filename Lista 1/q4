@@ -1,0 +1,3 @@
+Para acessar o EAX com 32bits basta usar EAX.
+Para acessar o EAX com 16 bits basta usar AX.
+Para acessar o EAX com 8 bits basta usar AL e para usar os mais significativos usamos AH.

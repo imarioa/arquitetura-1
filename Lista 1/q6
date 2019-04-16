@@ -1,0 +1,27 @@
+%include "io.inc"
+
+
+section .bss
+vetor resd 10
+
+section .text
+
+global CMAIN
+CMAIN:
+    ;write your code here
+    
+    mov ecx, 10
+    mov esi, 0
+        L1:
+            GET_DEC 4, [vetor + esi]
+            mov eax, [vetor + esi]
+            inc eax
+            mov [vetor + esi], eax  
+            PRINT_DEC 4, [vetor + esi]
+            NEWLINE
+            add esi, 4
+            dec ecx
+        jnz L1
+
+    xor eax, eax
+    ret

@@ -1,0 +1,25 @@
+%include "io.inc"
+
+section .text
+global CMAIN
+CMAIN:
+    mov eax, 1;A
+    mov ebx, 2;B
+    mov ecx, 3;C
+    mov edx, 4;D
+    
+    ;BCDA
+    
+    XCHG eax,edx ; DBCA
+    
+    XCHG ecx, edx ;CBDA
+    XCHG ebx, ecx ;BCDA
+    
+    PRINT_DEC 4,ebx
+    PRINT_DEC 4,ecx
+    PRINT_DEC 4,edx
+    PRINT_DEC 4,eax
+    
+    
+    xor eax, eax
+    ret

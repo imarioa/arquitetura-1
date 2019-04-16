@@ -1,0 +1,21 @@
+%include "io.inc"
+
+section .text
+global CMAIN
+CMAIN:
+    ;eax, ebx, ecx, edx
+    mov eax, 5
+    mov ebx, 6
+    mov ecx, 2
+    mov edx, 1
+    
+    
+    add eax, ebx
+    add ecx, edx
+    sub eax, ecx
+    
+    PRINT_DEC 4, eax
+
+ret
+    
+    

@@ -1,0 +1,19 @@
+%include "io.inc"
+section .data
+arrayB DB 0,1,2,3,4,5,6,7,8,9
+
+section .text
+global CMAIN
+CMAIN:
+    
+    mov ecx, 10
+    mov esi, 0
+    mov eax, 0
+    .L1:
+    add eax, [arrayB + esi]
+    inc esi
+    loop .L1
+    
+    PRINT_DEC 1, eax
+    xor eax, eax
+    ret

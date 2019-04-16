@@ -1,0 +1,19 @@
+%include "io.inc"
+
+section .text
+global CMAIN
+CMAIN:
+    GET_DEC 4, ebx
+    
+    call area
+    PRINT_DEC 4, eax
+    
+area:
+    mov eax, ebx
+    mul ebx
+    mov ebx, 4
+    mul ebx
+    mov ebx, 3
+    mul ebx
+    
+ret

@@ -1,0 +1,21 @@
+%include "io.inc"
+
+section .text
+global CMAIN
+CMAIN:
+    GET_DEC 4, eax
+    GET_DEC 4, ebx
+   
+    sub eax, ebx
+    sub ebx, eax
+    add ebx, eax
+   
+   
+    ;xchg eax, ebx
+    
+    PRINT_DEC 4, eax
+    NEWLINE
+    PRINT_DEC 4, ebx
+    
+    xor eax, eax
+    ret

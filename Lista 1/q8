@@ -1,0 +1,31 @@
+%include "io.inc"
+
+section .data
+string db 'Imario',0
+tam dd ($-string)
+
+section .bss
+string2 resb 100
+
+section .text
+global CMAIN
+CMAIN:
+    mov ebp, esp; for correct debugging
+    mov ecx, [tam]
+    mov esi, string + 5
+    mov edx, string2
+    mov ebx, 0
+    mov eax, 1
+
+    .L1:
+    mov edx, [esi]
+    mov [string2 + ebx], edx
+    add edx, 1
+    dec esi
+    add ebx,1
+
+    loop .L1
+    PRINT_STRING string2
+
+    xor eax, eax
+    ret

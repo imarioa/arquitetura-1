@@ -1,0 +1,25 @@
+%include "io.inc"
+
+
+section .bss
+x resd 1
+b resd 1
+
+section .text
+
+global CMAIN
+CMAIN:
+    ;write your code here
+    GET_DEC 4, x
+    GET_DEC 4, b
+    
+    mov eax, [x] 
+    add eax, [b]
+    PRINT_DEC 4, eax
+    NEWLINE
+    mov eax,[x]
+    sub eax, [b]
+    PRINT_DEC 4, eax
+       
+    xor eax, eax
+    ret

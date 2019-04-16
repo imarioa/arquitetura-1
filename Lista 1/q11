@@ -1,0 +1,31 @@
+%include "io.inc"
+
+section .bss
+count resd 1
+
+section .text
+global CMAIN
+CMAIN:
+    GET_DEC 4, eax
+    GET_DEC 4, ebx
+    
+    mov ecx, ebx
+    dec ecx
+    mov esi, eax;aux
+    mov edx, 0;resultado
+   
+    .L1:
+        mov [count], ecx
+        mov ecx, eax
+        mov edx, 0
+        .L2:
+        add edx, esi
+        loop .L2
+        mov esi, edx
+        mov ecx, [count]
+    loop .L1
+    
+    PRINT_DEC 4, edx
+    
+    xor eax, eax
+    ret
