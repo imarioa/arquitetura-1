@@ -1,0 +1,37 @@
+%include "io.inc"
+
+section .bss
+s RESD 50
+
+section .text
+global CMAIN
+CMAIN:
+
+mov  esi, 0
+push 0h
+    L1:
+       GET_DEC 4,[s + esi]
+       mov ecx, dword[s + esi]
+       push ecx
+       inc ecx
+       add esi, 4
+    loop L1
+mov esi, 0
+pop ecx
+    L2:
+        pop ecx
+        mov [s + esi], ecx
+        add esi, 4
+        inc ecx
+    loop L2
+sub esi, 4
+mov ecx, esi
+mov esi, 0
+    L3:
+    PRINT_DEC 4, [s + esi]
+    add esi, 4
+    sub ecx, 3
+    loop L3
+;write your code here
+xor eax, eax
+ret

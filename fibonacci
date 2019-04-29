@@ -1,0 +1,43 @@
+%include "io.inc"
+
+section .bss
+fi RESD 50
+
+section .text
+global CMAIN
+CMAIN:
+    mov ebp, esp; for correct debugging
+    mov eax, 1
+    mov [fi], eax
+    mov [fi + 4], eax
+    call fibonacci
+    PRINT_UDEC 4, [fi + 4 * 45]
+    xor eax, eax
+    ret
+
+fibonacci:
+    pushad
+    
+    mov ecx, 50
+    mov eax, 0 ;soma
+    mov esi, 0 ;indice
+    mov ebx, 4 ;indice
+    mov edi, 8 ;onde vai guardar
+    
+    .L1:
+    add eax, [fi + esi]
+    add eax, [fi + ebx]
+    mov [fi + edi], eax
+    
+    mov eax, 0  
+    add esi, 4
+    add ebx, 4
+    add edi, 4
+    
+    loop .L1
+        
+    popad
+
+ret
+    
+    
