@@ -1,8 +1,8 @@
 %include "io.inc"
 
 section .data
-matriz times 5 * 4 dd  0
-
+soma dd 0
+;matrix3 times 10 * 10 dd 0
 section .bss
 matrix resd 10 * 10
 linha resd 1
@@ -20,29 +20,111 @@ CMAIN:
     mov ebp, esp; for correct debugging
     GET_DEC 4, [linha] ;n linhas
     GET_DEC 4, [coluna] ;m colunas
-    ;GET_DEC 4, [linha2] ;n linhas
-    ;GET_DEC 4, [coluna2] ;m colunas
+    GET_DEC 4, [linha2] ;n linhas
+    GET_DEC 4, [coluna2] ;m colunas
     
-    ;mov edx, [linha2]
+    mov edx, [linha2]
     mov ecx, [linha]
-    ;mov esi, [coluna2]
+    mov esi, [coluna2]
     mov eax, [coluna]
     
-    ;mov edi, matrix2
     mov ebx, matrix
     call ler_matriz
-    ;push ebx
-    ;mov ebx, edi
-    mov edi, matrix3
-    call transposta
-    ;pop ebx
-    mov ebx, edi
-    mov ecx, [coluna]
-    mov eax, [linha]
-    ;call mult_matriz   
+    push ebx
+    mov ebx, matrix2
+    push eax
+    push ecx
+    mov eax, esi
+    mov ecx, edx
+    call ler_matriz
+    pop ecx
+    pop eax
+    pop ebx
+    mov edi, matrix2
+    call mult_matriz
+    mov ebx, matrix3
     call printar_matriz
     
     xor eax, eax
+    ret
+
+
+mult_matriz:
+    ;parametro matriz1(ebx) matriz2(edi)
+    pushad
+    cmp eax,edx
+    jne .false
+    
+    mov edx, 0
+    mov eax, 0
+    ;eax, ebx, ecx, edx, esp, ebp, esi, edi
+    
+    ;i = esi
+    ;j = edx
+    
+    ;linha matriz 1 = ecx
+    ;coluna matriz 2 = esi
+    mov edx, ecx
+    mov ebp, 0
+    .for1:
+        push ecx
+        .for2:
+            push esi
+            mov ecx, [coluna2]
+            mov eax, esi
+            
+            dec ecx
+            .for3:
+                ;Para guardar edx na pilha, pq a proxima instrução é uma multiplicação
+                push edx
+                mul esi      ;eax = COL(eax) * i
+                pop edx
+                add eax, ecx ;eax = COL(eax) * i + j
+                push ebx
+                mov ebx, [ebx + eax * 4]
+                mov eax, edx
+                push edx
+                mul ecx
+                pop edx 
+                add eax, esi
+                mov eax, [edi + eax * 4]
+                push edx
+                mul ebx
+                pop edx
+                push edx
+                mov edx, [soma]
+                add eax, edx
+                pop edx
+                mov [soma], eax
+                pop ebx
+                mov eax, edx ;Reseta o valor de eax para o valor inicial(Nº total de Colunas)
+                dec ecx
+                cmp ecx, 0
+           jge .for3
+           mov eax, edx
+           push edx
+           mul esi
+           pop edx
+           add eax, ebp
+           inc ebp
+           push ebx
+           mov ebx, [soma]
+           mov [matrix3 + eax * 4], ebx
+           push eax
+           mov eax, 0
+           mov [soma], eax
+           pop eax
+           pop ebx
+           pop esi
+           dec esi
+           pop ecx
+           dec ecx
+           jnz .for2
+    pop ecx
+    dec ecx
+    jnz .for1
+    .false:
+    popad
     ret
 
 transposta:
@@ -56,9 +138,8 @@ transposta:
     mov edx, ecx ; move para edx o numero total de linhas
     .for1:
         push ecx
-        dec eax
         mov ecx, eax
-        inc eax
+        dec ecx
         mov ebp, eax
         .for2:
             ;antes de toda a multiplicação é usado o push edx para preservar o valor de edx
@@ -108,53 +189,7 @@ mult_escalar:
         add esi, 4
     loop .for1
     popad
-    ret
-
-
-mult_matriz:
-    ;parametro matriz1(ebx) matriz2(edi)
-    pushad
-    cmp eax,edx
-    jne .false
-    
-    mov edx, 0
-    mov eax, 0
-    ;eax, ebx, ecx, edx, esp, ebp, esi, edi
-    
-    ;i = esi
-    ;j = edx
-    
-    ;linha matriz 1 = ecx
-    ;coluna matriz 2 = esi
-    
-    .for1:
-        push ecx
-        mov ecx, esi
-        push esi
-        .for2:
-            push ecx
-            mov ecx, eax
-            mov edx, eax
-            .for3:
-                push edx ;Para guardar edx na pilha, pq a proxima instrução é uma multiplicação
-                mul esi      ;eax = COL(eax) * i
-                add eax, ecx ;eax = COL(eax) * i + j
-                push esi
-                mov esi, [ebx + eax * 4]
-                mul ecx
-                mov edx, eax
-                pop eax
-                add edx, eax
-                push eax
-                mov eax, [edi + eax * 4]
-                mul esi
-                
-                pop edx ;Retira o edx da pilha
-                mov eax, edx ;Reseta o valor de eax para o valor inicial(Nº total de Colunas)
-    .false:
-    popad
-    ret
-        
+    ret        
 neg_matriz:
      ;neg_matriz: neg_matriz(ebx)
     pushad
