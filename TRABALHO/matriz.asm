@@ -3,6 +3,7 @@
 section .data
 soma dd 0
 ;matrix3 times 10 * 10 dd 0
+vet dd 1,2,3,4
 section .bss
 matrix resd 10 * 10
 linha resd 1
@@ -14,6 +15,8 @@ coluna2 resd 1
 
 matrix3 resd 10 * 10
 
+vets resd 100
+
 section .text
 global CMAIN
 CMAIN:
@@ -22,11 +25,12 @@ CMAIN:
     GET_DEC 4, [coluna] ;m colunas
     GET_DEC 4, [linha2] ;n linhas
     GET_DEC 4, [coluna2] ;m colunas
-    
-    mov edx, [linha2]
+       
     mov ecx, [linha]
-    mov esi, [coluna2]
     mov eax, [coluna]
+    mov edx, [linha2]
+    mov edi, [coluna2]
+   
     
     mov ebx, matrix
     call ler_matriz
@@ -34,99 +38,149 @@ CMAIN:
     mov ebx, matrix2
     push eax
     push ecx
-    mov eax, esi
-    mov ecx, edx
+    mov eax, [coluna2]
+    mov ecx, [linha2]
     call ler_matriz
     pop ecx
     pop eax
     pop ebx
-    mov edi, matrix2
-    call mult_matriz
+    mov esi, matrix2
+    
+    call mul_matriz
+    
     mov ebx, matrix3
+    mov ecx, 4
+    mov eax, 5
+    
+        
     call printar_matriz
     
     xor eax, eax
     ret
-
-
-mult_matriz:
-    ;parametro matriz1(ebx) matriz2(edi)
+    
+mul_matriz:
+    ;parametro: mul_matriz(matriz A: ebx, matriz B: esi)
+    ;nºlinhas matriz A: ecx
+    ;nºcolunas matriz A: eax
+    ;nºlinhas matriz B: edx
+    ;nºcolunas matriz B: edi
     pushad
     cmp eax,edx
     jne .false
-    
-    mov edx, 0
-    mov eax, 0
-    ;eax, ebx, ecx, edx, esp, ebp, esi, edi
-    
-    ;i = esi
-    ;j = edx
-    
-    ;linha matriz 1 = ecx
-    ;coluna matriz 2 = esi
-    mov edx, ecx
+    ;formula = endereço inicial + (Nº de COL * i + j) * 4
     mov ebp, 0
-    .for1:
+    mov ecx, [coluna2]
+    .for3:
         push ecx
-        .for2:
-            push esi
-            mov ecx, [coluna2]
-            mov eax, esi
-            
+        mov ecx, [linha]
+        mov edi, 0
+        .for1:
+            ;O for1 é usado para andar com a colunas da mat B    
+            push ecx
+            mov ecx, eax
+            mov edx, eax ;Guadar o valor o nº de colunas, que é usado na formula(COL * i + j)
             dec ecx
-            .for3:
-                ;Para guardar edx na pilha, pq a proxima instrução é uma multiplicação
-                push edx
-                mul esi      ;eax = COL(eax) * i
+            ;Antes de toda a multiplicação o edx é colocado na pilha e em seguida é tirado
+            ;O for2 faz a soma de uma linha da mat A com uma coluna da mat B
+            .for2:
+                push edx 
+                mul edi      ;eax = COL * i
                 pop edx
-                add eax, ecx ;eax = COL(eax) * i + j
+                add eax, ecx ;eax = COL * i + j
                 push ebx
                 mov ebx, [ebx + eax * 4]
-                mov eax, edx
+                mov eax, [coluna2]
                 push edx
-                mul ecx
+                mul ecx ; eax = COL * i , aqui tem que ser o ecx, pq é ele que vai variar
+                pop edx
+                add eax, ebp ;ebp é usado para andar as colunas somente no quando for para o for3
+                push ebp
+                mov ebp, [esi + eax * 4] ;esi = endereço da matriz 2
+                push eax
+                mov eax, ebx ;move o valor da posição (ebx + eax * 4) para eax
+                push edx
+                mul ebp
                 pop edx 
-                add eax, esi
-                mov eax, [edi + eax * 4]
-                push edx
-                mul ebx
-                pop edx
-                push edx
-                mov edx, [soma]
-                add eax, edx
-                pop edx
+                add eax, [soma]
                 mov [soma], eax
-                pop ebx
+                pop eax
+                pop ebp
+                pop ebx          
                 mov eax, edx ;Reseta o valor de eax para o valor inicial(Nº total de Colunas)
                 dec ecx
                 cmp ecx, 0
-           jge .for3
-           mov eax, edx
-           push edx
-           mul esi
-           pop edx
-           add eax, ebp
-           inc ebp
-           push ebx
-           mov ebx, [soma]
-           mov [matrix3 + eax * 4], ebx
-           push eax
-           mov eax, 0
-           mov [soma], eax
-           pop eax
-           pop ebx
-           pop esi
-           dec esi
-           pop ecx
-           dec ecx
-           jnz .for2
-    pop ecx
-    dec ecx
-    jnz .for1
+            jge .for2
+            ;Armazenando na matriz resultado
+            ;Armazena coluna por coluna
+            push eax
+            push edx
+            mov eax, [coluna2]
+            mul edi 
+            pop edx
+            add eax, ebp
+            push ecx
+            mov ecx, [soma]
+            mov [matrix3 + eax * 4], ecx
+            mov ecx, 0
+            mov [soma], ecx
+            pop ecx
+            pop eax
+            inc edi
+            pop ecx
+        loop .for1
+        inc ebp
+        pop ecx
+    loop .for3
     .false:
     popad
     ret
 
+mul_vet:
+    ;parametro: mul_vet(matriz A: ebx, vetor: esi)
+    ;nºlinhas matriz A: ecx
+    ;nºcolunas matriz A: eax
+    pushad
+    ;formula = endereço inicial + (Nº de COL * i + j) * 4
+    mov edi, 0 
+    .for1:
+    
+        push ecx
+        mov ecx, eax
+        mov edx, eax ;Guadar o valor o nº de colunas, que é usado na formula(COL * i + j)
+        dec ecx
+        ;Antes de toda a multiplicação o edx é colocado na pilha e em seguida é tirado
+        .for2:
+            push edx
+            mul edi      ;eax = COL * i
+            pop edx
+            add eax, ecx ;eax = COL * i + j
+            push ebx
+            mov ebx, [ebx + eax * 4]
+            mov ebp, [esi + ecx * 4] ;percorrendo vetor normalmente
+            push eax
+            mov eax, ebx
+            push edx
+            mul ebp
+            pop edx 
+            add eax, [soma]
+            mov [soma], eax
+            pop eax
+            pop ebx            
+            mov eax, edx ;Reseta o valor de eax para o valor inicial(Nº total de Colunas)
+            dec ecx
+            cmp ecx, 0
+        jge .for2
+        push eax
+        mov eax, [soma]
+        mov [vets + edi * 4], eax
+        mov eax, 0
+        mov [soma], eax
+        pop eax
+        inc edi
+        pop ecx
+    loop .for1
+    popad
+    ret
 transposta:
     ;recebe a matriz 1 em ebx e a matriz 2 em edi
     pushad   
@@ -394,11 +448,4 @@ printar_matriz:
         dec ecx
     jnz .for1
     popad
-    ret
-    
-
-
-
-           
-    
-    
+    ret 
