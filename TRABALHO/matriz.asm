@@ -2,7 +2,7 @@
 
 section .data
 soma dd 0
-vet dd 1,2,3,4
+vet dd 1,2,3
 
 section .bss
 
@@ -16,7 +16,7 @@ coluna2 resd 1
 
 matrix3 resd 10 * 10
 
-vets resd 100
+matr resd 100
 
 section .text
 global CMAIN
@@ -24,34 +24,35 @@ CMAIN:
     mov ebp, esp; for correct debugging
     GET_DEC 4, [linha] ;n linhas
     GET_DEC 4, [coluna] ;m colunas
-    GET_DEC 4, [linha2] ;n linhas
-    GET_DEC 4, [coluna2] ;m colunas
+    ;GET_DEC 4, [linha2] ;n linhas
+    ;GET_DEC 4, [coluna2] ;m colunas
        
     mov ecx, [linha]
     mov eax, [coluna]
-    mov edx, [linha2]
-    mov edi, [coluna2]
+    ;mov edx, [linha2]
+    ;mov edi, [coluna2]
    
     
     mov ebx, matrix
     call ler_matriz
-    push ebx
-    mov ebx, matrix2
-    push eax
-    push ecx
-    mov eax, [coluna2]
-    mov ecx, [linha2]
-    call ler_matriz
-    pop ecx
-    pop eax
-    pop ebx
-    mov esi, matrix2
+    ;push ebx
+    ;mov ebx, matrix2
+    ;push eax
+    ;push ecx
+    ;mov eax, [coluna2]
+    ;mov ecx, [linha2]
+    ;call ler_matriz
+    ;pop ecx
+   ; pop eax
+    ;pop ebx
+    ;mov esi, matrix2
+    mov esi, vet
+    call mul_vet
+    mov ebx, ebp
     
-    call mul_matriz
-    
-    mov ebx, matrix3
-    mov ecx, 3
-    mov eax, 2
+    ;mov ebx, edi
+    ;mov ecx, 4
+    mov eax, 1
     
         
     call printar_matriz
@@ -177,7 +178,7 @@ mul_vet:
         jge .for2
         push eax
         mov eax, [soma]
-        mov [vets + edi * 4], eax
+        mov [matr + edi * 4], eax
         mov eax, 0
         mov [soma], eax
         pop eax
@@ -185,19 +186,19 @@ mul_vet:
         pop ecx
     loop .for1
     popad
+    mov ebp, matr
     ret
 transposta:
-    ;recebe a matriz 1 em ebx e a matriz 2 em edi
+    ;recebe a matriz em ebx e a retorna a matriz transposta em edi
     pushad   
     ;eax = n total de colunas
+    ;ecx = n total de linhas e indice das colunas 
     ;formula = endereço inicial + (Nº de COL * i + j) * 4
-    mov esi, 0 ;j = indice das colunas
-   
-    ;ecx = n total de linhas e indice das colunas   
+    mov esi, 0 ;j = indice das colunas      
     mov edx, ecx ; move para edx o numero total de linhas
     .for1:
         push ecx
-        mov ecx, eax
+        mov ecx, eax ;move para ecx, o número de colunas
         dec ecx
         mov ebp, eax
         .for2:
