@@ -2,9 +2,10 @@
 
 section .data
 soma dd 0
-;matrix3 times 10 * 10 dd 0
 vet dd 1,2,3,4
+
 section .bss
+
 matrix resd 10 * 10
 linha resd 1
 coluna resd 1
@@ -49,8 +50,8 @@ CMAIN:
     call mul_matriz
     
     mov ebx, matrix3
-    mov ecx, 4
-    mov eax, 5
+    mov ecx, 3
+    mov eax, 2
     
         
     call printar_matriz
@@ -68,11 +69,14 @@ mul_matriz:
     cmp eax,edx
     jne .false
     ;formula = endereço inicial + (Nº de COL * i + j) * 4
+    mov ebp, ecx
+    mov ecx, edi ;mover para o ecx o nº de colunas da matriz B
+    mov edi, ebp
     mov ebp, 0
-    mov ecx, [coluna2]
     .for3:
+        push edi
         push ecx
-        mov ecx, [linha]
+        mov ecx, edi ;mover para o ecx o nº de linhas da matriz A
         mov edi, 0
         .for1:
             ;O for1 é usado para andar com a colunas da mat B    
@@ -130,6 +134,7 @@ mul_matriz:
         loop .for1
         inc ebp
         pop ecx
+        pop edi
     loop .for3
     .false:
     popad
