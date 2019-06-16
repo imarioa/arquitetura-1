@@ -1,0 +1,39 @@
+Ler arquivo
+eax		-> 3
+ebx		-> descritor do arquivo
+ecx		-> ponteiro para buffer de entrada
+edx		-> tamanho do buffer
+Retorno:
+	número de bytes lidos ou código de erro
+
+Escrever arquivo
+eax		-> 4
+ebx		-> descritor do arquivo
+ecx		-> ponteiro para buffer de saída
+edx		-> tamanho do buffer
+Retorno:
+	número de bytes escritos ou código de erro
+
+Abrir arquivo
+eax		-> 5
+ebx		-> nome do arquivo
+ecx		-> modo de acesso do arquivo (read, write, read/write)
+edx		-> permissão do arquivo
+Retorno:
+	descritor do arquivo ou código de erro
+
+
+Fechar arquivo
+eax		-> 6
+ebx		-> descritor do arquivo
+Retorno:
+	se der erro, retorna o código de erro
+
+
+Criar arquivo
+eax		-> 8
+ebx		-> nome do arquivo
+ecx		-> permissão do arquivo
+Retorno:
+	descritor do arquivo ou código de erro.
+
